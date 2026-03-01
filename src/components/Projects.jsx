@@ -1,0 +1,336 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { ExternalLink, Github, Trophy, FolderGit2, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const projects = [
+  {
+    id: 1,
+    title: 'Smart Transport Tracker',
+    badge: '🏆 1st Prize Winner',
+    badgeColor: '#f59e0b',
+    description:
+      'Awarded 1st Prize in a Hackathon. A real-time transport management solution tracking live vehicle locations and seat availability for louages, trains, and cars.',
+    tech: ['React.js', 'Node.js', 'Real-time', 'Maps API'],
+    color: '#f59e0b',
+    screens: ['bg-gradient-to-br from-amber-900/20 to-bg-card'],
+  },
+  {
+    id: 2,
+    title: 'Academic Attendance & Live Management System',
+    badge: '🎓 University Platform',
+    badgeColor: '#00d4b4',
+    description:
+      'A university platform with a real-time administrative dashboard for live notes and instant reporting on attendance.',
+    tech: ['React.js', 'GraphQL', 'Node.js', 'Dashboard'],
+    color: '#00d4b4',
+    screens: [],
+  },
+  {
+    id: 3,
+    title: 'Ecoverse (S4S Hackathon)',
+    badge: '🌱 Hackathon Project',
+    badgeColor: '#68d391',
+    description:
+      'A React-based web app to calculate and reduce individual carbon footprints, focusing on front-end and UX.',
+    tech: ['React.js', 'UX Design', 'Carbon API', 'Charts'],
+    color: '#68d391',
+    screens: [],
+  },
+];
+
+function MonitorMockup({ project }) {
+  return (
+    <div className="relative flex justify-center items-end">
+      {/* Monitor */}
+      <div
+        className="relative w-full max-w-sm rounded-2xl overflow-hidden"
+        style={{
+          background: '#0a0f1a',
+          border: '2px solid rgba(0,212,180,0.2)',
+          boxShadow: '0 0 40px rgba(0,0,0,0.6), 0 0 20px rgba(0,212,180,0.05)',
+        }}
+      >
+        {/* Top bar */}
+        <div
+          className="flex items-center gap-1.5 px-4 py-2.5"
+          style={{ background: 'rgba(0,212,180,0.06)', borderBottom: '1px solid rgba(0,212,180,0.1)' }}
+        >
+          {['#ff5f57', '#febc2e', '#28c840'].map((c) => (
+            <span key={c} className="w-2.5 h-2.5 rounded-full" style={{ background: c }} />
+          ))}
+          <div
+            className="flex-1 mx-3 h-5 rounded-full flex items-center px-3"
+            style={{ background: 'rgba(255,255,255,0.04)' }}
+          >
+            <span className="text-[9px] text-text-muted truncate">localhost:3000 · {project.title}</span>
+          </div>
+        </div>
+
+        {/* Screen content */}
+        <div
+          className="h-44 relative overflow-hidden flex items-center justify-center"
+          style={{ background: 'linear-gradient(135deg, #0f1f38, #0a1628)' }}
+        >
+          {/* Simulated UI */}
+          <div className="absolute inset-0 p-4 flex flex-col gap-2">
+            {/* Simulated navbar */}
+            <div className="flex items-center justify-between px-3 py-1.5 rounded-lg" style={{ background: 'rgba(0,212,180,0.06)' }}>
+              <div className="w-12 h-1.5 rounded-full" style={{ background: 'rgba(0,212,180,0.4)' }} />
+              <div className="flex gap-2">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="w-6 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.1)' }} />
+                ))}
+              </div>
+            </div>
+            {/* Content rows */}
+            <div className="flex gap-2 mt-1">
+              <div className="flex-1 flex flex-col gap-1.5">
+                <div className="h-2 rounded" style={{ background: 'rgba(0,212,180,0.25)', width: '70%' }} />
+                <div className="h-1.5 rounded" style={{ background: 'rgba(255,255,255,0.06)', width: '90%' }} />
+                <div className="h-1.5 rounded" style={{ background: 'rgba(255,255,255,0.06)', width: '75%' }} />
+                <div className="h-1.5 rounded" style={{ background: 'rgba(255,255,255,0.06)', width: '55%' }} />
+                <div
+                  className="mt-2 px-3 py-1 rounded-full text-[8px] font-bold w-fit"
+                  style={{ background: 'rgba(0,212,180,0.15)', color: '#00d4b4', border: '1px solid rgba(0,212,180,0.3)' }}
+                >
+                  View Live
+                </div>
+              </div>
+              <div
+                className="w-16 h-20 rounded-xl flex items-center justify-center text-2xl"
+                style={{ background: `rgba(${project.color === '#f59e0b' ? '245,158,11' : project.color === '#00d4b4' ? '0,212,180' : '104,211,145'},0.08)`, border: `1px solid ${project.color}20` }}
+              >
+                {project.id === 1 ? '🚌' : project.id === 2 ? '🎓' : '🌱'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Monitor stand */}
+      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-16 h-4 rounded-b-xl"
+        style={{ background: 'rgba(0,212,180,0.1)', border: '1px solid rgba(0,212,180,0.15)' }} />
+    </div>
+  );
+}
+
+export default function Projects() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const [active, setActive] = useState(0);
+
+  const prev = () => setActive((a) => (a - 1 + projects.length) % projects.length);
+  const next = () => setActive((a) => (a + 1) % projects.length);
+  const project = projects[active];
+
+  return (
+    <section id="projects" className="relative min-h-screen flex flex-col justify-center py-20 overflow-hidden">
+      <div
+        className="absolute bottom-0 left-0 w-96 h-96 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(0,212,180,0.04) 0%, transparent 70%)' }}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          ref={ref}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-16"
+        >
+          <span className="section-tag">
+            <FolderGit2 size={14} />
+            Works
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black text-text-primary mt-2">
+            Featured <span className="text-gradient">Projects</span>
+          </h2>
+          <p className="text-text-secondary mt-3 max-w-xl mx-auto">
+            Here are some of my most notable projects showcasing my skills in full-stack development.
+          </p>
+        </motion.div>
+
+        {/* Desktop: staggered fade-in-up cards */}
+        <motion.div
+          className="hidden lg:grid lg:grid-cols-3 gap-8"
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.18, delayChildren: 0.1 } },
+          }}
+          initial="hidden"
+          animate={isInView ? 'visible' : 'hidden'}
+        >
+          {projects.map((p) => {
+            const isWinner = p.id === 1;
+            return (
+              <motion.div
+                key={p.id}
+                variants={{
+                  hidden: { opacity: 0, y: 60 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
+                }}
+                className="flex flex-col gap-5 group relative"
+              >
+                {/* 1st Prize glow ring */}
+                {isWinner && (
+                  <motion.div
+                    className="absolute -inset-2 rounded-3xl pointer-events-none z-0"
+                    animate={{ opacity: [0.3, 0.7, 0.3] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{
+                      background: 'radial-gradient(ellipse at top, rgba(245,158,11,0.12) 0%, transparent 70%)',
+                      border: '1px solid rgba(245,158,11,0.2)',
+                      borderRadius: '1.5rem',
+                    }}
+                  />
+                )}
+
+                <div className="relative z-10">
+                  {/* Monitor mockup */}
+                  <MonitorMockup project={p} />
+
+                  {/* Card info */}
+                  <div
+                    className="mt-5 p-5 rounded-2xl flex flex-col gap-3 flex-1"
+                    style={{
+                      background: isWinner ? 'rgba(20,22,30,0.85)' : 'rgba(15,31,56,0.7)',
+                      border: isWinner ? '1px solid rgba(245,158,11,0.35)' : '1px solid rgba(0,212,180,0.1)',
+                      transition: 'border-color 0.3s, box-shadow 0.3s',
+                      boxShadow: isWinner ? '0 0 30px rgba(245,158,11,0.08)' : 'none',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = isWinner ? 'rgba(245,158,11,0.6)' : 'rgba(0,212,180,0.4)';
+                      e.currentTarget.style.boxShadow = isWinner
+                        ? '0 8px 30px rgba(245,158,11,0.15)'
+                        : '0 8px 30px rgba(0,212,180,0.08)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = isWinner ? 'rgba(245,158,11,0.35)' : 'rgba(0,212,180,0.1)';
+                      e.currentTarget.style.boxShadow = isWinner ? '0 0 30px rgba(245,158,11,0.08)' : 'none';
+                    }}
+                  >
+                    {/* 1st Prize special banner */}
+                    {isWinner && (
+                      <div
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl mb-1"
+                        style={{
+                          background: 'linear-gradient(90deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))',
+                          border: '1px solid rgba(245,158,11,0.3)',
+                        }}
+                      >
+                        <Trophy size={14} style={{ color: '#f59e0b' }} />
+                        <span className="text-xs font-black tracking-wide" style={{ color: '#f59e0b' }}>
+                          🥇 HACKATHON — 1ST PRIZE WINNER
+                        </span>
+                      </div>
+                    )}
+
+                    <span
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold w-fit"
+                      style={{ background: `${p.badgeColor}18`, color: p.badgeColor, border: `1px solid ${p.badgeColor}30` }}
+                    >
+                      {p.badge}
+                    </span>
+                    <h3 className="font-bold text-text-primary leading-snug group-hover:text-accent transition-colors">
+                      {p.title}
+                    </h3>
+                    <p className="text-sm text-text-secondary leading-relaxed flex-1">{p.description}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {p.tech.map((t) => (
+                        <span
+                          key={t}
+                          className="px-2.5 py-0.5 rounded-full text-[11px] font-medium"
+                          style={{ background: 'rgba(0,212,180,0.08)', color: '#00d4b4', border: '1px solid rgba(0,212,180,0.15)' }}
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex gap-2 pt-1">
+                      <button className="flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-accent transition-colors" aria-label="GitHub">
+                        <Github size={14} /> Code
+                      </button>
+                      <button className="flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-accent transition-colors" aria-label="Live">
+                        <ExternalLink size={14} /> Live
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* Mobile: Carousel */}
+        <div className="lg:hidden">
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.4 }}
+            className="flex flex-col gap-5"
+          >
+            <MonitorMockup project={project} />
+            <div
+              className="p-5 rounded-2xl flex flex-col gap-3"
+              style={{
+                background: project.id === 1 ? 'rgba(20,22,30,0.9)' : 'rgba(15,31,56,0.7)',
+                border: project.id === 1 ? '1px solid rgba(245,158,11,0.35)' : '1px solid rgba(0,212,180,0.15)',
+              }}
+            >
+              {project.id === 1 && (
+                <div
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                  style={{ background: 'linear-gradient(90deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))', border: '1px solid rgba(245,158,11,0.3)' }}
+                >
+                  <Trophy size={13} style={{ color: '#f59e0b' }} />
+                  <span className="text-xs font-black" style={{ color: '#f59e0b' }}>🥇 HACKATHON — 1ST PRIZE WINNER</span>
+                </div>
+              )}
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold w-fit"
+                style={{ background: `${project.badgeColor}18`, color: project.badgeColor, border: `1px solid ${project.badgeColor}30` }}
+              >
+                {project.badge}
+              </span>
+              <h3 className="font-bold text-text-primary">{project.title}</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">{project.description}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {project.tech.map((t) => (
+                  <span key={t} className="px-2.5 py-0.5 rounded-full text-[11px] font-medium"
+                    style={{ background: 'rgba(0,212,180,0.08)', color: '#00d4b4', border: '1px solid rgba(0,212,180,0.15)' }}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Controls */}
+          <div className="flex items-center justify-between mt-6">
+            <button onClick={prev} className="btn-primary p-2 rounded-full" aria-label="Previous">
+              <ChevronLeft size={18} />
+            </button>
+            <div className="flex gap-2">
+              {projects.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActive(i)}
+                  className="w-2 h-2 rounded-full transition-all duration-300"
+                  style={{ background: i === active ? '#00d4b4' : 'rgba(0,212,180,0.2)' }}
+                />
+              ))}
+            </div>
+            <button onClick={next} className="btn-primary p-2 rounded-full" aria-label="Next">
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
