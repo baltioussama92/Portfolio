@@ -1,7 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
-import { useRef } from 'react';
 import { Code2, Server, Database, Layers } from 'lucide-react';
 
 const categories = [
@@ -63,13 +61,14 @@ const skillItemVariants = {
   }),
 };
 
-function SkillBar({ name, icon, level, index, isParentInView }) {
+function SkillBar({ name, icon, level, index }) {
   return (
     <motion.div
       custom={index}
       variants={skillItemVariants}
       initial="hidden"
-      animate={isParentInView ? 'visible' : 'hidden'}
+      whileInView="visible"
+      viewport={{ once: false, amount: 0.3 }}
       className="skill-icon-wrapper"
     >
       <div className="flex items-center justify-between w-full mb-1.5">
@@ -84,7 +83,8 @@ function SkillBar({ name, icon, level, index, isParentInView }) {
           className="h-full rounded-full"
           style={{ background: 'linear-gradient(90deg, #00d4b4, #00ffdd)' }}
           initial={{ width: 0 }}
-          animate={isParentInView ? { width: `${level}%` } : { width: 0 }}
+          whileInView={{ width: `${level}%` }}
+          viewport={{ once: false, amount: 0.3 }}
           transition={{ duration: 0.9, delay: index * 0.07 + 0.25, ease: 'easeOut' }}
         />
       </div>
@@ -93,8 +93,6 @@ function SkillBar({ name, icon, level, index, isParentInView }) {
 }
 
 export default function Skills() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
     <section id="skills" className="relative min-h-screen flex flex-col justify-center py-20 overflow-hidden">
@@ -108,10 +106,10 @@ export default function Skills() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          ref={ref}
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
           className="text-center mb-16"
         >
           {/* </> icon */}
@@ -148,7 +146,8 @@ export default function Skills() {
             visible: { transition: { staggerChildren: 0.15, delayChildren: 0.05 } },
           }}
           initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
+          whileInView="visible"
+          viewport={{ once: false, amount: 0.1 }}
         >
           {categories.map((cat, catIdx) => {
             const Icon = cat.icon;
@@ -182,7 +181,6 @@ export default function Skills() {
                       key={skill.name}
                       {...skill}
                       index={catIdx * 6 + skillIdx}
-                      isParentInView={isInView}
                     />
                   ))}
                 </div>
@@ -194,8 +192,9 @@ export default function Skills() {
         {/* Tech badges row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
           className="mt-10 flex flex-wrap justify-center gap-3"
         >
           {['React.js', 'Node.js', 'GraphQL', 'Python', 'SQL', 'JavaScript', 'Tailwind', 'Git', 'SQLite', 'Qt'].map(

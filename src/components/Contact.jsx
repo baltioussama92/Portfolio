@@ -30,7 +30,7 @@ const contactDetails = [
 
 export default function Contact() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const isInView = useInView(ref, { once: false, amount: 0.05 });
 
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [errors, setErrors] = useState({});
@@ -85,7 +85,7 @@ export default function Contact() {
           ref={ref}
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
           className="text-center mb-16"
         >
           <span className="section-tag">
@@ -105,7 +105,7 @@ export default function Contact() {
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.1 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: 'easeOut' }}
             className="lg:col-span-3"
           >
             <div
@@ -229,7 +229,7 @@ export default function Contact() {
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
             className="lg:col-span-2 flex flex-col gap-4"
           >
             <div className="mb-2">

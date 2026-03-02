@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-scroll';
+import profileImg from '../assets/Profile.jpeg';
 import { ArrowDown, Trophy, Briefcase, Languages, ChevronDown } from 'lucide-react';
 
 const stats = [
@@ -81,13 +82,16 @@ export default function Hero() {
             >
               {/* Avatar */}
               <div
-                className="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-bold relative overflow-hidden"
+                className="w-20 h-20 rounded-2xl relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(0,212,180,0.2), rgba(0,212,180,0.05))',
                   border: '2px solid rgba(0,212,180,0.35)',
                 }}
               >
-                <span className="text-gradient">OB</span>
+                <img
+                  src={profileImg}
+                  alt="Oussama Balti"
+                  className="w-full h-full object-cover rounded-2xl"
+                />
                 {/* Animated ring */}
                 <motion.div
                   className="absolute inset-0 rounded-2xl"

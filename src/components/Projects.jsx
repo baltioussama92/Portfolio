@@ -118,7 +118,7 @@ function MonitorMockup({ project }) {
 
 export default function Projects() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const isInView = useInView(ref, { once: false, amount: 0.05 });
   const [active, setActive] = useState(0);
 
   const prev = () => setActive((a) => (a - 1 + projects.length) % projects.length);
@@ -137,8 +137,9 @@ export default function Projects() {
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.1 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
           className="text-center mb-16"
         >
           <span className="section-tag">
@@ -161,7 +162,8 @@ export default function Projects() {
             visible: { transition: { staggerChildren: 0.18, delayChildren: 0.1 } },
           }}
           initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
+          whileInView="visible"
+          viewport={{ once: false, amount: 0.1 }}
         >
           {projects.map((p) => {
             const isWinner = p.id === 1;
@@ -170,7 +172,7 @@ export default function Projects() {
                 key={p.id}
                 variants={{
                   hidden: { opacity: 0, y: 60 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.22, 1, 0.36, 1] } },
                 }}
                 className="flex flex-col gap-5 group relative"
               >

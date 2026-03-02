@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
-import { useRef } from 'react';
 import { User, GraduationCap, Code } from 'lucide-react';
+import profileImg from '../assets/Profile.jpeg';
 
 function SectionDivider() {
   return (
@@ -15,9 +14,6 @@ function SectionDivider() {
 export { SectionDivider };
 
 export default function About() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
@@ -25,7 +21,7 @@ export default function About() {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: 'easeOut' } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } },
   };
 
   return (
@@ -36,10 +32,10 @@ export default function About() {
       />
 
       <motion.div
-        ref={ref}
         variants={containerVariants}
         initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.05 }}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         {/* Header */}
@@ -66,27 +62,11 @@ export default function About() {
                   boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
                 }}
               >
-                {/* Simulated developer image placeholder */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-                  <div
-                    className="w-24 h-24 rounded-2xl flex items-center justify-center text-4xl font-black"
-                    style={{ background: 'rgba(0,212,180,0.1)', border: '2px solid rgba(0,212,180,0.3)' }}
-                  >
-                    <span className="text-gradient">OB</span>
-                  </div>
-                  {/* Code lines decoration */}
-                  <div className="flex flex-col gap-2 w-40">
-                    {[70, 95, 55, 80, 45].map((w, i) => (
-                      <motion.div
-                        key={i}
-                        className="h-1.5 rounded-full"
-                        style={{ width: `${w}%`, background: i % 2 === 0 ? 'rgba(0,212,180,0.3)' : 'rgba(255,255,255,0.06)' }}
-                        animate={{ opacity: [0.4, 1, 0.4] }}
-                        transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <img
+                  src={profileImg}
+                  alt="Oussama Balti"
+                  className="w-full h-full object-cover"
+                />
 
                 {/* Corner decoration */}
                 <div

@@ -61,21 +61,23 @@ const experiences = [
   },
 ];
 
-function TimelineItem({ item, index, isInView }) {
+function TimelineItem({ item, index }) {
   const isWork = item.type === 'work';
 
   return (
     <motion.div
       initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
-      animate={isInView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.12 }}
-      className={`relative flex gap-4 sm:gap-6 ${index % 2 === 0 ? '' : ''}`}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: false, amount: 0.1 }}
+      transition={{ duration: 0.8, delay: index * 0.1, ease: 'easeOut' }}
+      className="relative flex gap-4 sm:gap-6"
     >
       {/* Timeline dot */}
       <div className="flex flex-col items-center">
         <motion.div
-          animate={isInView ? { scale: [1, 1.3, 1] } : {}}
-          transition={{ duration: 0.5, delay: index * 0.12 + 0.3 }}
+          whileInView={{ scale: [1, 1.3, 1] }}
+          viewport={{ once: false, amount: 0.5 }}
+          transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
           className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 z-10"
           style={{
             background: `${item.color}18`,
@@ -152,7 +154,7 @@ function TimelineItem({ item, index, isInView }) {
 
 export default function Experience() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const isInView = useInView(ref, { once: false, amount: 0.05 });
 
   const workItems = experiences.filter((e) => e.type === 'work');
   const eduItems = experiences.filter((e) => e.type === 'edu');
@@ -169,8 +171,9 @@ export default function Experience() {
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.1 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
           className="text-center mb-16"
         >
           <span className="section-tag">
@@ -190,8 +193,9 @@ export default function Experience() {
           <div>
             <motion.h3
               initial={{ opacity: 0, x: -20 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
               className="flex items-center gap-2 text-lg font-bold text-text-primary mb-8"
             >
               <div className="w-7 h-7 rounded-lg flex items-center justify-center"
@@ -202,7 +206,7 @@ export default function Experience() {
             </motion.h3>
             <div>
               {workItems.map((item, i) => (
-                <TimelineItem key={item.title} item={item} index={i} isInView={isInView} />
+                <TimelineItem key={item.title} item={item} index={i} />
               ))}
             </div>
           </div>
@@ -211,8 +215,9 @@ export default function Experience() {
           <div>
             <motion.h3
               initial={{ opacity: 0, x: 20 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: 'easeOut' }}
               className="flex items-center gap-2 text-lg font-bold text-text-primary mb-8"
             >
               <div className="w-7 h-7 rounded-lg flex items-center justify-center"
@@ -223,7 +228,7 @@ export default function Experience() {
             </motion.h3>
             <div>
               {eduItems.map((item, i) => (
-                <TimelineItem key={item.title} item={item} index={i} isInView={isInView} />
+                <TimelineItem key={item.title} item={item} index={i} />
               ))}
             </div>
           </div>
