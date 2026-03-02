@@ -38,6 +38,17 @@ const projects = [
     color: '#68d391',
     screens: [],
   },
+  {
+    id: 4,
+    title: 'Desktop Café Management System',
+    badge: '🖥️ Desktop Application',
+    badgeColor: '#a78bfa',
+    description:
+      'A professional desktop management system designed for café owners, featuring a local database for real-time inventory tracking and automated sales reporting.',
+    tech: ['Python', 'Qt Designer', 'SQLite'],
+    color: '#a78bfa',
+    screens: [],
+  },
 ];
 
 function MonitorMockup({ project }) {
@@ -100,9 +111,9 @@ function MonitorMockup({ project }) {
               </div>
               <div
                 className="w-16 h-20 rounded-xl flex items-center justify-center text-2xl"
-                style={{ background: `rgba(${project.color === '#f59e0b' ? '245,158,11' : project.color === '#00d4b4' ? '0,212,180' : '104,211,145'},0.08)`, border: `1px solid ${project.color}20` }}
+                style={{ background: `rgba(${project.color === '#f59e0b' ? '245,158,11' : project.color === '#00d4b4' ? '0,212,180' : project.color === '#68d391' ? '104,211,145' : '167,139,250'},0.08)`, border: `1px solid ${project.color}20` }}
               >
-                {project.id === 1 ? '🚌' : project.id === 2 ? '🎓' : '🌱'}
+                {project.id === 1 ? '🚌' : project.id === 2 ? '🎓' : project.id === 3 ? '🌱' : '🐍'}
               </div>
             </div>
           </div>
@@ -156,7 +167,7 @@ export default function Projects() {
 
         {/* Desktop: staggered fade-in-up cards */}
         <motion.div
-          className="hidden lg:grid lg:grid-cols-3 gap-8"
+          className="hidden lg:grid lg:grid-cols-2 gap-8"
           variants={{
             hidden: {},
             visible: { transition: { staggerChildren: 0.18, delayChildren: 0.1 } },
