@@ -37,6 +37,13 @@ export default function Contact() {
   const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [loading, setLoading] = useState(false);
 
+  // ─── Web3Forms access key ──────────────────────────────────────────────────
+  // 1. Go to https://web3forms.com/
+  // 2. Enter "balti.oussama.business@gmail.com" and click "Create Access Key"
+  // 3. Check your inbox and copy the key, then replace the string below
+  const WEB3FORMS_KEY = 'ab1ba6d0-b104-46fc-ae58-7e62f1fc7702';
+  // ──────────────────────────────────────────────────────────────────────────
+
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = 'Name is required';
@@ -56,13 +63,35 @@ export default function Contact() {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
+
     setLoading(true);
-    // Simulate sending (replace with real API call)
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    setStatus('success');
-    setForm({ name: '', email: '', message: '' });
-    setTimeout(() => setStatus(null), 5000);
+    setStatus(null);
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          subject: `Portfolio contact from ${form.name}`,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus('success');
+        setForm({ name: '', email: '', message: '' });
+        setTimeout(() => setStatus(null), 6000);
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputCls = (field) =>
@@ -191,6 +220,18 @@ export default function Contact() {
                   >
                     <CheckCircle size={16} />
                     Message sent successfully! I'll get back to you soon.
+                  </motion.div>
+                )}
+
+                {status === 'error' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium"
+                    style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.35)', color: '#f87171' }}
+                  >
+                    <AlertCircle size={16} />
+                    Something went wrong. Please try again or email me directly.
                   </motion.div>
                 )}
 
