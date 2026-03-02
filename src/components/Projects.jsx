@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
-import { useRef } from 'react';
 import { ExternalLink, Github, Trophy, FolderGit2, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const GAP = 24; // px gap between cards
 
 const projects = [
   {
@@ -128,13 +128,64 @@ function MonitorMockup({ project }) {
 }
 
 export default function Projects() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.05 });
-  const [active, setActive] = useState(0);
+  const trackRef = useRef(null);
 
-  const prev = () => setActive((a) => (a - 1 + projects.length) % projects.length);
-  const next = () => setActive((a) => (a + 1) % projects.length);
-  const project = projects[active];
+  // How many cards to show based on breakpoint
+  const [visibleCount, setVisibleCount] = useState(3);
+  // Pixel width of one card (computed from container)
+  const [cardWidth, setCardWidth] = useState(360); // safe fallback
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const vw = window.innerWidth;
+      const count = vw >= 1024 ? 3 : vw >= 640 ? 2 : 1;
+      setVisibleCount(count);
+      if (trackRef.current) {
+        const w = trackRef.current.offsetWidth;
+        if (w > 0) setCardWidth((w - GAP * (count - 1)) / count);
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+
+  const maxIndex = Math.max(0, projects.length - visibleCount);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const clampedIndex = Math.min(activeIndex, maxIndex);
+
+  const goPrev = () => setActiveIndex((i) => Math.max(0, i - 1));
+  const goNext = () => setActiveIndex((i) => Math.min(maxIndex, i + 1));
+
+  const handleDragEnd = (_, info) => {
+    if (info.offset.x < -50) goNext();
+    else if (info.offset.x > 50) goPrev();
+  };
+
+  // Mobile single-card carousel (< sm)
+  const [mobileActive, setMobileActive] = useState(0);
+  const mobilePrev = () => setMobileActive((a) => (a - 1 + projects.length) % projects.length);
+  const mobileNext = () => setMobileActive((a) => (a + 1) % projects.length);
+  const mobileProject = projects[mobileActive];
+
+  const NavBtn = ({ onClick, disabled, children, side }) => (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={side === 'left' ? 'Previous' : 'Next'}
+      className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-11 h-11 rounded-full transition-all duration-200"
+      style={{
+        [side === 'left' ? 'left' : 'right']: '-20px',
+        background: disabled ? 'rgba(15,31,56,0.4)' : 'rgba(0,212,180,0.12)',
+        border: disabled ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,212,180,0.5)',
+        boxShadow: disabled ? 'none' : '0 0 20px rgba(0,212,180,0.3)',
+        color: disabled ? '#3a4a5a' : '#00d4b4',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+    >
+      {children}
+    </button>
+  );
 
   return (
     <section id="projects" className="relative min-h-screen flex flex-col justify-center py-20 overflow-hidden">
@@ -146,10 +197,9 @@ export default function Projects() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          ref={ref}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.1 }}
+          viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className="text-center mb-16"
         >
@@ -165,137 +215,173 @@ export default function Projects() {
           </p>
         </motion.div>
 
-        {/* Desktop: staggered fade-in-up cards */}
-        <motion.div
-          className="hidden lg:grid lg:grid-cols-2 gap-8"
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.18, delayChildren: 0.1 } },
-          }}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: false, amount: 0.1 }}
-        >
-          {projects.map((p) => {
-            const isWinner = p.id === 1;
-            return (
+        {/* ─── Slider: sm+ (tablet=2 cards, desktop=3 cards) ─── */}
+        <div className="hidden sm:block">
+          <div className="relative px-7">
+            <NavBtn onClick={goPrev} disabled={clampedIndex === 0} side="left">
+              <ChevronLeft size={20} />
+            </NavBtn>
+
+            {/* Clipping window — overflow:hidden hides off-screen cards */}
+            <div
+              ref={trackRef}
+              className="overflow-hidden"
+              style={{ userSelect: 'none' }}
+            >
               <motion.div
-                key={p.id}
-                variants={{
-                  hidden: { opacity: 0, y: 60 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.22, 1, 0.36, 1] } },
+                className="flex"
+                style={{ gap: GAP, cursor: 'grab' }}
+                animate={{ x: -(clampedIndex * (cardWidth + GAP)) }}
+                transition={{ type: 'spring', stiffness: 300, damping: 35, mass: 0.8 }}
+                drag="x"
+                dragConstraints={{
+                  left: -(maxIndex * (cardWidth + GAP)),
+                  right: 0,
                 }}
-                className="flex flex-col gap-5 group relative"
+                dragElastic={0.06}
+                onDragEnd={handleDragEnd}
+                whileDrag={{ cursor: 'grabbing' }}
               >
-                {/* 1st Prize glow ring */}
-                {isWinner && (
-                  <motion.div
-                    className="absolute -inset-2 rounded-3xl pointer-events-none z-0"
-                    animate={{ opacity: [0.3, 0.7, 0.3] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{
-                      background: 'radial-gradient(ellipse at top, rgba(245,158,11,0.12) 0%, transparent 70%)',
-                      border: '1px solid rgba(245,158,11,0.2)',
-                      borderRadius: '1.5rem',
-                    }}
-                  />
-                )}
-
-                <div className="relative z-10">
-                  {/* Monitor mockup */}
-                  <MonitorMockup project={p} />
-
-                  {/* Card info */}
-                  <div
-                    className="mt-5 p-5 rounded-2xl flex flex-col gap-3 flex-1"
-                    style={{
-                      background: isWinner ? 'rgba(20,22,30,0.85)' : 'rgba(15,31,56,0.7)',
-                      border: isWinner ? '1px solid rgba(245,158,11,0.35)' : '1px solid rgba(0,212,180,0.1)',
-                      transition: 'border-color 0.3s, box-shadow 0.3s',
-                      boxShadow: isWinner ? '0 0 30px rgba(245,158,11,0.08)' : 'none',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = isWinner ? 'rgba(245,158,11,0.6)' : 'rgba(0,212,180,0.4)';
-                      e.currentTarget.style.boxShadow = isWinner
-                        ? '0 8px 30px rgba(245,158,11,0.15)'
-                        : '0 8px 30px rgba(0,212,180,0.08)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = isWinner ? 'rgba(245,158,11,0.35)' : 'rgba(0,212,180,0.1)';
-                      e.currentTarget.style.boxShadow = isWinner ? '0 0 30px rgba(245,158,11,0.08)' : 'none';
-                    }}
-                  >
-                    {/* 1st Prize special banner */}
-                    {isWinner && (
-                      <div
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl mb-1"
-                        style={{
-                          background: 'linear-gradient(90deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))',
-                          border: '1px solid rgba(245,158,11,0.3)',
-                        }}
-                      >
-                        <Trophy size={14} style={{ color: '#f59e0b' }} />
-                        <span className="text-xs font-black tracking-wide" style={{ color: '#f59e0b' }}>
-                          🥇 HACKATHON — 1ST PRIZE WINNER
-                        </span>
-                      </div>
-                    )}
-
-                    <span
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold w-fit"
-                      style={{ background: `${p.badgeColor}18`, color: p.badgeColor, border: `1px solid ${p.badgeColor}30` }}
+                {projects.map((p) => {
+                  const isWinner = p.id === 1;
+                  return (
+                    <motion.div
+                      key={p.id}
+                      // Fixed card width — never shrinks
+                      style={{ width: cardWidth, minWidth: cardWidth, maxWidth: cardWidth, flexShrink: 0 }}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: false, amount: 0.1 }}
+                      transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+                      className="flex flex-col gap-5 group relative"
                     >
-                      {p.badge}
-                    </span>
-                    <h3 className="font-bold text-text-primary leading-snug group-hover:text-accent transition-colors">
-                      {p.title}
-                    </h3>
-                    <p className="text-sm text-text-secondary leading-relaxed flex-1">{p.description}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {p.tech.map((t) => (
-                        <span
-                          key={t}
-                          className="px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                          style={{ background: 'rgba(0,212,180,0.08)', color: '#00d4b4', border: '1px solid rgba(0,212,180,0.15)' }}
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex gap-2 pt-1">
-                      <button className="flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-accent transition-colors" aria-label="GitHub">
-                        <Github size={14} /> Code
-                      </button>
-                      <button className="flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-accent transition-colors" aria-label="Live">
-                        <ExternalLink size={14} /> Live
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+                      {isWinner && (
+                        <motion.div
+                          className="absolute -inset-2 rounded-3xl pointer-events-none z-0"
+                          animate={{ opacity: [0.3, 0.7, 0.3] }}
+                          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                          style={{
+                            background: 'radial-gradient(ellipse at top, rgba(245,158,11,0.12) 0%, transparent 70%)',
+                            border: '1px solid rgba(245,158,11,0.2)',
+                            borderRadius: '1.5rem',
+                          }}
+                        />
+                      )}
 
-        {/* Mobile: Carousel */}
-        <div className="lg:hidden">
+                      <div className="relative z-10 flex flex-col h-full">
+                        <MonitorMockup project={p} />
+
+                        <div
+                          className="mt-5 p-5 rounded-2xl flex flex-col gap-3 flex-1"
+                          style={{
+                            background: isWinner ? 'rgba(20,22,30,0.85)' : 'rgba(15,31,56,0.7)',
+                            border: isWinner ? '1px solid rgba(245,158,11,0.35)' : '1px solid rgba(0,212,180,0.1)',
+                            transition: 'border-color 0.3s, box-shadow 0.3s',
+                            boxShadow: isWinner ? '0 0 30px rgba(245,158,11,0.08)' : 'none',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = isWinner ? 'rgba(245,158,11,0.6)' : 'rgba(0,212,180,0.4)';
+                            e.currentTarget.style.boxShadow = isWinner ? '0 8px 30px rgba(245,158,11,0.15)' : '0 8px 30px rgba(0,212,180,0.08)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = isWinner ? 'rgba(245,158,11,0.35)' : 'rgba(0,212,180,0.1)';
+                            e.currentTarget.style.boxShadow = isWinner ? '0 0 30px rgba(245,158,11,0.08)' : 'none';
+                          }}
+                        >
+                          {isWinner && (
+                            <div
+                              className="flex items-center gap-2 px-3 py-2 rounded-xl mb-1"
+                              style={{
+                                background: 'linear-gradient(90deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))',
+                                border: '1px solid rgba(245,158,11,0.3)',
+                              }}
+                            >
+                              <Trophy size={14} style={{ color: '#f59e0b' }} />
+                              <span className="text-xs font-black tracking-wide" style={{ color: '#f59e0b' }}>
+                                🥇 HACKATHON — 1ST PRIZE WINNER
+                              </span>
+                            </div>
+                          )}
+                          <span
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold w-fit"
+                            style={{ background: `${p.badgeColor}18`, color: p.badgeColor, border: `1px solid ${p.badgeColor}30` }}
+                          >
+                            {p.badge}
+                          </span>
+                          <h3 className="font-bold text-text-primary leading-snug group-hover:text-accent transition-colors">
+                            {p.title}
+                          </h3>
+                          <p className="text-sm text-text-secondary leading-relaxed flex-1">{p.description}</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {p.tech.map((t) => (
+                              <span
+                                key={t}
+                                className="px-2.5 py-0.5 rounded-full text-[11px] font-medium"
+                                style={{ background: 'rgba(0,212,180,0.08)', color: '#00d4b4', border: '1px solid rgba(0,212,180,0.15)' }}
+                              >
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="flex gap-2 pt-1">
+                            <button className="flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-accent transition-colors" aria-label="GitHub">
+                              <Github size={14} /> Code
+                            </button>
+                            <button className="flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-accent transition-colors" aria-label="Live">
+                              <ExternalLink size={14} /> Live
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </div>
+
+            <NavBtn onClick={goNext} disabled={clampedIndex === maxIndex} side="right">
+              <ChevronRight size={20} />
+            </NavBtn>
+          </div>
+
+          {/* Slide dots */}
+          <div className="flex justify-center gap-2.5 mt-8">
+            {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveIndex(i)}
+                className="transition-all duration-300 rounded-full"
+                style={{
+                  width: i === clampedIndex ? '24px' : '8px',
+                  height: '8px',
+                  background: i === clampedIndex ? '#00d4b4' : 'rgba(0,212,180,0.2)',
+                  boxShadow: i === clampedIndex ? '0 0 8px rgba(0,212,180,0.5)' : 'none',
+                }}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ─── Mobile Carousel (< sm) ─── */}
+        <div className="sm:hidden">
           <motion.div
-            key={active}
+            key={mobileActive}
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -40 }}
             transition={{ duration: 0.4 }}
             className="flex flex-col gap-5"
           >
-            <MonitorMockup project={project} />
+            <MonitorMockup project={mobileProject} />
             <div
               className="p-5 rounded-2xl flex flex-col gap-3"
               style={{
-                background: project.id === 1 ? 'rgba(20,22,30,0.9)' : 'rgba(15,31,56,0.7)',
-                border: project.id === 1 ? '1px solid rgba(245,158,11,0.35)' : '1px solid rgba(0,212,180,0.15)',
+                background: mobileProject.id === 1 ? 'rgba(20,22,30,0.9)' : 'rgba(15,31,56,0.7)',
+                border: mobileProject.id === 1 ? '1px solid rgba(245,158,11,0.35)' : `1px solid ${mobileProject.color}22`,
               }}
             >
-              {project.id === 1 && (
+              {mobileProject.id === 1 && (
                 <div
                   className="flex items-center gap-2 px-3 py-2 rounded-xl"
                   style={{ background: 'linear-gradient(90deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))', border: '1px solid rgba(245,158,11,0.3)' }}
@@ -306,14 +392,14 @@ export default function Projects() {
               )}
               <span
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold w-fit"
-                style={{ background: `${project.badgeColor}18`, color: project.badgeColor, border: `1px solid ${project.badgeColor}30` }}
+                style={{ background: `${mobileProject.badgeColor}18`, color: mobileProject.badgeColor, border: `1px solid ${mobileProject.badgeColor}30` }}
               >
-                {project.badge}
+                {mobileProject.badge}
               </span>
-              <h3 className="font-bold text-text-primary">{project.title}</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">{project.description}</p>
+              <h3 className="font-bold text-text-primary">{mobileProject.title}</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">{mobileProject.description}</p>
               <div className="flex flex-wrap gap-1.5">
-                {project.tech.map((t) => (
+                {mobileProject.tech.map((t) => (
                   <span key={t} className="px-2.5 py-0.5 rounded-full text-[11px] font-medium"
                     style={{ background: 'rgba(0,212,180,0.08)', color: '#00d4b4', border: '1px solid rgba(0,212,180,0.15)' }}>
                     {t}
@@ -323,22 +409,38 @@ export default function Projects() {
             </div>
           </motion.div>
 
-          {/* Controls */}
+          {/* Mobile controls */}
           <div className="flex items-center justify-between mt-6">
-            <button onClick={prev} className="btn-primary p-2 rounded-full" aria-label="Previous">
+            <button
+              onClick={mobilePrev}
+              className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200"
+              style={{ background: 'rgba(0,212,180,0.1)', border: '1px solid rgba(0,212,180,0.35)', color: '#00d4b4' }}
+              aria-label="Previous"
+            >
               <ChevronLeft size={18} />
             </button>
             <div className="flex gap-2">
               {projects.map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => setActive(i)}
-                  className="w-2 h-2 rounded-full transition-all duration-300"
-                  style={{ background: i === active ? '#00d4b4' : 'rgba(0,212,180,0.2)' }}
+                  onClick={() => setMobileActive(i)}
+                  className="transition-all duration-300 rounded-full"
+                  style={{
+                    width: i === mobileActive ? '20px' : '8px',
+                    height: '8px',
+                    background: i === mobileActive ? '#00d4b4' : 'rgba(0,212,180,0.2)',
+                    boxShadow: i === mobileActive ? '0 0 6px rgba(0,212,180,0.5)' : 'none',
+                  }}
+                  aria-label={`Project ${i + 1}`}
                 />
               ))}
             </div>
-            <button onClick={next} className="btn-primary p-2 rounded-full" aria-label="Next">
+            <button
+              onClick={mobileNext}
+              className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200"
+              style={{ background: 'rgba(0,212,180,0.1)', border: '1px solid rgba(0,212,180,0.35)', color: '#00d4b4' }}
+              aria-label="Next"
+            >
               <ChevronRight size={18} />
             </button>
           </div>
@@ -347,3 +449,4 @@ export default function Projects() {
     </section>
   );
 }
+
