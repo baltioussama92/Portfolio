@@ -199,7 +199,7 @@ export default function Hero() {
           >
             {[
               { num: '1st', label: 'Prize', sub: 'Hackathon' },
-              { num: '4+', label: 'Projects', sub: 'Major' },
+              { num: '5+', label: 'Projects', sub: 'Major' },
               { num: '3', label: 'Languages', sub: 'FR/EN/AR' },
             ].map(({ num, label, sub }, i) => (
               <motion.div
