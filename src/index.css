@@ -12,6 +12,11 @@
     scroll-behavior: smooth;
   }
 
+  /* Hide default cursor — replaced by CustomCursor component */
+  html, body, * {
+    cursor: none !important;
+  }
+
   html {
     scroll-behavior: smooth;
   }
