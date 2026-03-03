@@ -1,6 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Code2, Server, Database, Layers } from 'lucide-react';
+import { FaReact, FaHtml5, FaCss3Alt, FaNodeJs, FaPython, FaGitAlt } from 'react-icons/fa';
+import { SiJavascript, SiTailwindcss, SiGraphql, SiQt, SiSqlite, SiFigma } from 'react-icons/si';
+import { TbApi, TbRefresh } from 'react-icons/tb';
+import { BsDatabaseFill } from 'react-icons/bs';
+import { MdDesignServices, MdOutlineAccountTree } from 'react-icons/md';
 
 const categories = [
   {
@@ -8,11 +13,11 @@ const categories = [
     icon: Code2,
     color: '#61dafb',
     skills: [
-      { name: 'React.js', icon: '⚛️', level: 90 },
-      { name: 'HTML5', icon: '🌐', level: 95 },
-      { name: 'CSS3', icon: '🎨', level: 88 },
-      { name: 'JavaScript', icon: '⚡', level: 85 },
-      { name: 'Tailwind CSS', icon: '💨', level: 82 },
+      { name: 'React.js',     icon: FaReact,      iconColor: '#61dafb', level: 90 },
+      { name: 'HTML5',        icon: FaHtml5,       iconColor: '#e34f26', level: 95 },
+      { name: 'CSS3',         icon: FaCss3Alt,     iconColor: '#1572b6', level: 88 },
+      { name: 'JavaScript',   icon: SiJavascript,  iconColor: '#f7df1e', level: 85 },
+      { name: 'Tailwind CSS', icon: SiTailwindcss, iconColor: '#06b6d4', level: 82 },
     ],
   },
   {
@@ -20,11 +25,11 @@ const categories = [
     icon: Server,
     color: '#68d391',
     skills: [
-      { name: 'Node.js', icon: '🟢', level: 80 },
-      { name: 'GraphQL', icon: '🔷', level: 75 },
-      { name: 'Python', icon: '🐍', level: 78 },
-      { name: 'REST APIs', icon: '🔗', level: 82 },
-      { name: 'Qt Designer', icon: '🖥️', level: 72 },
+      { name: 'Node.js',      icon: FaNodeJs,   iconColor: '#339933', level: 80 },
+      { name: 'GraphQL',      icon: SiGraphql,  iconColor: '#e10098', level: 75 },
+      { name: 'Python',       icon: FaPython,   iconColor: '#3776ab', level: 78 },
+      { name: 'REST APIs',    icon: TbApi,      iconColor: '#00d4b4', level: 82 },
+      { name: 'Qt Designer',  icon: SiQt,       iconColor: '#41cd52', level: 72 },
     ],
   },
   {
@@ -32,9 +37,9 @@ const categories = [
     icon: Database,
     color: '#f6ad55',
     skills: [
-      { name: 'SQL', icon: '🗄️', level: 80 },
-      { name: 'SQLite', icon: '💾', level: 78 },
-      { name: 'Data Modeling', icon: '📊', level: 72 },
+      { name: 'SQL',           icon: BsDatabaseFill,      iconColor: '#f59e0b', level: 80 },
+      { name: 'SQLite',        icon: SiSqlite,            iconColor: '#0f80cc', level: 78 },
+      { name: 'Data Modeling', icon: MdOutlineAccountTree, iconColor: '#a78bfa', level: 72 },
     ],
   },
   {
@@ -42,10 +47,10 @@ const categories = [
     icon: Layers,
     color: '#a78bfa',
     skills: [
-      { name: 'Git / GitHub', icon: '🐙', level: 85 },
-      { name: 'UI/UX Design', icon: '🎭', level: 75 },
-      { name: 'Figma', icon: '✏️', level: 70 },
-      { name: 'Agile/Scrum', icon: '🔄', level: 68 },
+      { name: 'Git / GitHub', icon: FaGitAlt,          iconColor: '#f05032', level: 85 },
+      { name: 'UI/UX Design', icon: MdDesignServices,  iconColor: '#ff7eb6', level: 75 },
+      { name: 'Figma',        icon: SiFigma,           iconColor: '#f24e1e', level: 70 },
+      { name: 'Agile/Scrum',  icon: TbRefresh,         iconColor: '#00d4b4', level: 68 },
     ],
   },
 ];
@@ -61,7 +66,7 @@ const skillItemVariants = {
   }),
 };
 
-function SkillBar({ name, icon, level, index }) {
+function SkillBar({ name, icon: Icon, iconColor, level, index }) {
   return (
     <motion.div
       custom={index}
@@ -73,7 +78,7 @@ function SkillBar({ name, icon, level, index }) {
     >
       <div className="flex items-center justify-between w-full mb-1.5">
         <div className="flex items-center gap-2">
-          <span className="text-base">{icon}</span>
+          <Icon size={16} style={{ color: iconColor }} />
           <span className="text-sm font-medium text-text-primary">{name}</span>
         </div>
         <span className="text-xs text-accent font-semibold">{level}%</span>
