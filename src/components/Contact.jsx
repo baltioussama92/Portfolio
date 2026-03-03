@@ -30,7 +30,7 @@ const contactDetails = [
 
 export default function Contact() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.05 });
+  const isInView = useInView(ref, { once: true, amount: 0.1 });
 
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [errors, setErrors] = useState({});
@@ -316,9 +316,9 @@ export default function Contact() {
               <p className="text-xs text-text-muted uppercase tracking-wider mb-3 font-semibold">Follow Me</p>
               <div className="flex gap-3">
                 {[
-                  { label: 'GitHub', href: 'https://github.com/', icon: '🐙' },
-                  { label: 'LinkedIn', href: 'https://linkedin.com/', icon: '💼' },
-                  { label: 'Twitter', href: 'https://twitter.com/', icon: '🐦' },
+                  { label: 'GitHub', href: 'https://github.com/baltioussama92', icon: '🐙' },
+                  { label: 'LinkedIn', href: 'www.linkedin.com/in/balti-oussama-b5aa842b8', icon: '💼' },
+                  { label: 'Instagram', href: 'https://www.instagram.com/oussama_09_balti?igsh=MXd0ajNuM3J5Y2o4bQ==', icon: '🐦' },
                 ].map(({ label, href, icon }) => (
                   <a
                     key={label}

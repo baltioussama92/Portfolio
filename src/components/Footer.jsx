@@ -61,9 +61,7 @@ export default function Footer() {
           {/* Bottom */}
           <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-3 text-xs text-text-muted">
             <p className="flex items-center gap-1.5">
-              © {new Date().getFullYear()} Oussama Balti. Made with{' '}
-              <Heart size={11} className="text-red-400 fill-red-400" />{' '}
-              using React & Tailwind CSS
+              © {new Date().getFullYear()} Oussama Balti
             </p>
             <p>Full-Stack Developer · Tunisia</p>
           </div>
