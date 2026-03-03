@@ -6,7 +6,7 @@ import { ArrowDown, Trophy, Briefcase, Languages, ChevronDown } from 'lucide-rea
 
 const stats = [
   { icon: Trophy, label: '1st Prize', sub: 'Hackathon Winner', color: '#f59e0b' },
-  { icon: Briefcase, label: '4+ Projects', sub: 'Major Projects', color: '#00d4b4' },
+  { icon: Briefcase, label: '5+ Projects', sub: 'Major Projects', color: '#00d4b4' },
   { icon: Languages, label: 'Trilingual', sub: 'FR / EN / AR', color: '#a78bfa' },
 ];
 

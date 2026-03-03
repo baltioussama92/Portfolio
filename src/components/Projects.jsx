@@ -1,8 +1,16 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Github, Trophy, FolderGit2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FaReact, FaNodeJs } from 'react-icons/fa';
 
 const GAP = 24; // px gap between cards
+
+const BankIcon = () => (
+  <span className="flex gap-1.5 items-center">
+    <FaReact size={14} style={{ color: '#61dafb' }} />
+    <FaNodeJs size={14} style={{ color: '#339933' }} />
+  </span>
+);
 
 const projects = [
   {
@@ -14,6 +22,7 @@ const projects = [
       'Awarded 1st Prize in a Hackathon. A real-time transport management solution tracking live vehicle locations and seat availability for louages, trains, and cars.',
     tech: ['React.js', 'Node.js', 'Real-time', 'Maps API'],
     color: '#f59e0b',
+    screenIcon: '🚌',
     screens: ['bg-gradient-to-br from-amber-900/20 to-bg-card'],
   },
   {
@@ -25,6 +34,7 @@ const projects = [
       'A university platform with a real-time administrative dashboard for live notes and instant reporting on attendance.',
     tech: ['React.js', 'GraphQL', 'Node.js', 'Dashboard'],
     color: '#00d4b4',
+    screenIcon: '🎓',
     screens: [],
   },
   {
@@ -36,6 +46,7 @@ const projects = [
       'A React-based web app to calculate and reduce individual carbon footprints, focusing on front-end and UX.',
     tech: ['React.js', 'UX Design', 'Carbon API', 'Charts'],
     color: '#68d391',
+    screenIcon: '🌱',
     screens: [],
   },
   {
@@ -47,7 +58,21 @@ const projects = [
       'A professional desktop management system designed for café owners, featuring a local database for real-time inventory tracking and automated sales reporting.',
     tech: ['Python', 'Qt Designer', 'SQLite'],
     color: '#a78bfa',
+    screenIcon: '🐍',
     screens: [],
+  },
+  {
+    id: 5,
+    title: 'Bank Check Management System',
+    badge: '💼 Full-Stack Web App',
+    badgeColor: '#4f8ef7',
+    description:
+      'A secure, automated system for managing and printing official bank checks, featuring a GraphQL-powered backend and a high-performance React frontend for administrative control. Built during my internship at ITDT.',
+    tech: ['Node.js', 'GraphQL', 'React.js', 'Tailwind CSS'],
+    color: '#4f8ef7',
+    screenIcon: BankIcon,
+    screens: [],
+    role: 'Full-Stack Developer Intern',
   },
 ];
 
@@ -111,9 +136,9 @@ function MonitorMockup({ project }) {
               </div>
               <div
                 className="w-16 h-20 rounded-xl flex items-center justify-center text-2xl"
-                style={{ background: `rgba(${project.color === '#f59e0b' ? '245,158,11' : project.color === '#00d4b4' ? '0,212,180' : project.color === '#68d391' ? '104,211,145' : '167,139,250'},0.08)`, border: `1px solid ${project.color}20` }}
+                style={{ background: `rgba(${project.color === '#f59e0b' ? '245,158,11' : project.color === '#00d4b4' ? '0,212,180' : project.color === '#68d391' ? '104,211,145' : project.color === '#4f8ef7' ? '79,142,247' : '167,139,250'},0.08)`, border: `1px solid ${project.color}20` }}
               >
-                {project.id === 1 ? '🚌' : project.id === 2 ? '🎓' : project.id === 3 ? '🌱' : '🐍'}
+                {typeof project.screenIcon === 'function' ? <project.screenIcon /> : project.screenIcon}
               </div>
             </div>
           </div>
@@ -251,7 +276,7 @@ export default function Projects() {
                       style={{ width: cardWidth, minWidth: cardWidth, maxWidth: cardWidth, flexShrink: 0 }}
                       initial={{ opacity: 0, y: 50 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: false, amount: 0.1 }}
+                      viewport={{ once: true, amount: 0.1 }}
                       transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
                       className="flex flex-col gap-5 group relative"
                     >
@@ -311,6 +336,12 @@ export default function Projects() {
                           <h3 className="font-bold text-text-primary leading-snug group-hover:text-accent transition-colors">
                             {p.title}
                           </h3>
+                          {p.role && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full w-fit"
+                              style={{ background: 'rgba(79,142,247,0.1)', color: '#4f8ef7', border: '1px solid rgba(79,142,247,0.25)' }}>
+                              🏢 {p.role}
+                            </span>
+                          )}
                           <p className="text-sm text-text-secondary leading-relaxed flex-1">{p.description}</p>
                           <div className="flex flex-wrap gap-1.5">
                             {p.tech.map((t) => (
@@ -397,6 +428,12 @@ export default function Projects() {
                 {mobileProject.badge}
               </span>
               <h3 className="font-bold text-text-primary">{mobileProject.title}</h3>
+              {mobileProject.role && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full w-fit"
+                  style={{ background: 'rgba(79,142,247,0.1)', color: '#4f8ef7', border: '1px solid rgba(79,142,247,0.25)' }}>
+                  🏢 {mobileProject.role}
+                </span>
+              )}
               <p className="text-sm text-text-secondary leading-relaxed">{mobileProject.description}</p>
               <div className="flex flex-wrap gap-1.5">
                 {mobileProject.tech.map((t) => (
