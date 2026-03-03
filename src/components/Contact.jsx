@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle, AlertCircle } from 'lucide-react';
+import { FaGithub, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
 
 const contactDetails = [
   {
@@ -316,23 +317,23 @@ export default function Contact() {
               <p className="text-xs text-text-muted uppercase tracking-wider mb-3 font-semibold">Follow Me</p>
               <div className="flex gap-3">
                 {[
-                  { label: 'GitHub', href: 'https://github.com/baltioussama92', icon: '🐙' },
-                  { label: 'LinkedIn', href: 'www.linkedin.com/in/balti-oussama-b5aa842b8', icon: '💼' },
-                  { label: 'Instagram', href: 'https://www.instagram.com/oussama_09_balti?igsh=MXd0ajNuM3J5Y2o4bQ==', icon: '🐦' },
-                ].map(({ label, href, icon }) => (
+                  { label: 'GitHub',    href: 'https://github.com/baltioussama92',                                          icon: FaGithub,    color: '#ffffff' },
+                  { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/balti-oussama-b5aa842b8',                        icon: FaLinkedinIn, color: '#0a66c2' },
+                  { label: 'Instagram', href: 'https://www.instagram.com/oussama_09_balti?igsh=MXd0ajNuM3J5Y2o4bQ==',      icon: FaInstagram, color: '#e1306c' },
+                ].map(({ label, href, icon: SocialIcon, color }) => (
                   <a
                     key={label}
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-base transition-all duration-200 hover:-translate-y-1"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 hover:-translate-y-1 hover:scale-110"
                     style={{
                       background: 'rgba(15,31,56,0.7)',
                       border: '1px solid rgba(0,212,180,0.15)',
                     }}
                     title={label}
                   >
-                    {icon}
+                    <SocialIcon size={18} style={{ color }} />
                   </a>
                 ))}
               </div>
