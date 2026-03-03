@@ -103,7 +103,7 @@ export default function About() {
                   boxShadow: '0 8px 25px rgba(0,0,0,0.4)',
                 }}
               >
-                <p className="text-lg font-black text-gradient leading-none">2+</p>
+                <p className="text-lg font-black text-gradient leading-none">3+</p>
                 <p className="text-[10px] text-text-secondary">Years coding</p>
               </motion.div>
             </div>
